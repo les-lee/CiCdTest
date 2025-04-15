@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_ENV = 'production'  // 设置环境变量（可以自定义）
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // 从 Git 仓库拉取代码
+                git 'git@github.com:les-lee/CiCdTest.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // 安装项目依赖
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // 构建项目
+                    sh 'npm run build'  // 假设项目使用 npm run build 进行构建
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // 运行单元测试
+                    sh 'npm test'  // 假设项目使用 npm test 运行测试
+                }
+            }
+        }
+
+    }
+
+    post {
+        always {
+            // 清理工作，确保构建后环境恢复
+            cleanWs()
+        }
+
+        success {
+            // 成功时的通知或处理逻辑
+            echo 'Build and Deployment Succeeded!'
+        }
+
+        failure {
+            // 失败时的通知或处理逻辑
+            echo 'Build or Deployment Failed.'
+        }
+    }
+}
